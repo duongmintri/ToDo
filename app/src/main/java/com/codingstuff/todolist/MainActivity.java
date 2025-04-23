@@ -29,12 +29,13 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements OnDialogCloseListner{
+public class MainActivity extends AppCompatActivity implements OnDialogCloseListner, DataRefreshListener {
 
     private RecyclerView recyclerView;
     private FloatingActionButton mFab;
@@ -55,13 +56,44 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
 
     private boolean isDarkMode = false;
 
+    // Static instance for data refresh
+    private static MainActivity instance;
+
+    public static MainActivity getInstance() {
+        return instance;
+    }
+
+    private void initFirestore() {
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+            .setPersistenceEnabled(true)
+            .build();
+
+        firestore = FirebaseFirestore.getInstance();
+        firestore.setFirestoreSettings(settings);
+    }
+
+    @Override
+    public void onDataRefreshed() {
+        // Refresh data from Firestore
+        if (listenerRegistration != null) {
+            listenerRegistration.remove();
+        }
+        loadData();
+        Toast.makeText(this, R.string.data_refreshed, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Set static instance
+        instance = this;
+
         // Áp dụng theme trước khi setContentView
         applyTheme();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initFirestore();
 
         try {
             // Thiết lập toolbar
@@ -76,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
             recyclerView = findViewById(R.id.recycerlview);
             mFab = findViewById(R.id.floatingActionButton);
             noTasksText = findViewById(R.id.no_tasks_text);
-            firestore = FirebaseFirestore.getInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,10 +127,10 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new TouchHelper(adapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
-        showData();
+        loadData();
         recyclerView.setAdapter(adapter);
     }
-    private void showData(){
+    public void loadData(){
         try {
             query = firestore.collection("task").orderBy("time" , Query.Direction.DESCENDING);
 
@@ -151,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
     @Override
     public void onDialogClose(DialogInterface dialogInterface) {
         mList.clear();
-        showData();
+        loadData();
         adapter.notifyDataSetChanged();
     }
 
@@ -178,6 +209,11 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
         } else if (id == R.id.menu_theme) {
             // Chuyển đổi theme
             toggleTheme();
+            return true;
+        } else if (id == R.id.menu_backup_restore) {
+            // Chuyển đến màn hình sao lưu và khôi phục
+            Intent intent = new Intent(MainActivity.this, BackupRestoreActivity.class);
+            startActivity(intent);
             return true;
         }
 

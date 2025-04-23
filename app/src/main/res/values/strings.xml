@@ -4,4 +4,44 @@
     <string name="dark_mode">Chế độ tối</string>
     <string name="light_mode">Chế độ sáng</string>
     <string name="theme_changed">Giao diện đã được thay đổi</string>
+
+    <!-- Backup and Restore -->
+    <string name="backup_restore">Sao lưu &amp; Khôi phục</string>
+    <string name="backup">Sao lưu</string>
+    <string name="restore">Khôi phục</string>
+    <string name="backup_now">Sao lưu ngay</string>
+    <string name="restore_from_file">Khôi phục từ file</string>
+    <string name="backup_title">Sao lưu dữ liệu</string>
+    <string name="restore_title">Khôi phục dữ liệu</string>
+    <string name="backup_description">Sao lưu tất cả công việc của bạn vào một file JSON. Bạn có thể sử dụng file này để khôi phục dữ liệu sau này.</string>
+    <string name="restore_description">Khôi phục công việc từ file sao lưu JSON. Các công việc sẽ được thêm vào danh sách hiện tại.</string>
+    <string name="status_ready">Sẵn sàng thực hiện sao lưu hoặc khôi phục</string>
+    <string name="status_loading">Đang tải dữ liệu...</string>
+    <string name="status_backup_success">Đã sao lưu %1$d công việc thành công</string>
+    <string name="status_restore_success">Đã khôi phục %1$d/%2$d công việc</string>
+    <string name="status_no_data">Không có dữ liệu để sao lưu</string>
+    <string name="status_error">Lỗi: %1$s</string>
+    <string name="confirm_restore_title">Xác nhận khôi phục</string>
+    <string name="confirm_restore_message">Khôi phục sẽ thêm %1$d công việc từ file sao lưu. Bạn có muốn tiếp tục?</string>
+    <string name="confirm_restore_positive">Khôi phục</string>
+    <string name="confirm_restore_negative">Hủy</string>
+    <string name="restore_cancelled">Đã hủy khôi phục</string>
+    <string name="backup_success">Sao lưu thành công</string>
+    <string name="restore_success">Khôi phục hoàn tất</string>
+    <string name="permission_granted">Đã cấp quyền truy cập bộ nhớ</string>
+    <string name="permission_denied">Quyền truy cập bộ nhớ bị từ chối</string>
+
+    <!-- Error messages -->
+    <string name="error_permission_denied">Lỗi quyền truy cập Firestore</string>
+    <string name="error_permission_title">Lỗi quyền truy cập cơ sở dữ liệu</string>
+    <string name="error_permission_message">Không thể khôi phục dữ liệu do lỗi quyền truy cập Firestore. Hãy kiểm tra quyền truy cập trong Firebase Console hoặc liên hệ với quản trị viên.</string>
+    <string name="error_restore_stopped">Quá trình khôi phục đã dừng do lỗi</string>
+    <string name="status_restoring">Đang khôi phục %1$d/%2$d công việc...</string>
+    <string name="status_loaded">Đã tải %1$d công việc, chuẩn bị sao lưu</string>
+    <string name="status_saving">Đang lưu dữ liệu sao lưu...</string>
+    <string name="error_backup_failed">Sao lưu thất bại</string>
+    <string name="error_restore_failed">Khôi phục thất bại</string>
+    <string name="ok">OK</string>
+    <string name="return_to_main">Quay lại màn hình chính</string>
+    <string name="data_refreshed">Dữ liệu đã được cập nhật</string>
 </resources>
