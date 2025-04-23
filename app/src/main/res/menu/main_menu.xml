@@ -6,4 +6,9 @@
         android:icon="@drawable/ic_baseline_calendar_today_24"
         android:title="Lịch"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_theme"
+        android:icon="@drawable/ic_baseline_dark_mode_24"
+        android:title="Chế độ tối"
+        app:showAsAction="ifRoom" />
 </menu>

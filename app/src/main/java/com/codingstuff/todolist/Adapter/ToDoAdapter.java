@@ -1,7 +1,9 @@
 package com.codingstuff.todolist.Adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codingstuff.todolist.AddNewTask;
@@ -109,12 +112,15 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
 
         // Thay đổi màu nền của card khi hoàn thành
         try {
-            View cardView = holder.itemView.findViewById(R.id.task_card);
+            MaterialCardView cardView = holder.itemView.findViewById(R.id.task_card);
             if (cardView != null) {
+                TypedValue typedValue = new TypedValue();
                 if (isCompleted) {
-                    cardView.setBackgroundResource(R.color.task_completed_background);
+                    context.getTheme().resolveAttribute(R.attr.colorTaskCompletedBackground, typedValue, true);
+                    cardView.setCardBackgroundColor(typedValue.data);
                 } else {
-                    cardView.setBackgroundResource(R.color.task_background);
+                    context.getTheme().resolveAttribute(R.attr.colorTaskBackground, typedValue, true);
+                    cardView.setCardBackgroundColor(typedValue.data);
                 }
             }
         } catch (Exception e) {
@@ -127,15 +133,19 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
                 try {
                     if (isChecked){
                         firestore.collection("task").document(toDoModel.TaskId).update("status" , 1);
-                        View cardView = holder.itemView.findViewById(R.id.task_card);
+                        MaterialCardView cardView = holder.itemView.findViewById(R.id.task_card);
                         if (cardView != null) {
-                            cardView.setBackgroundResource(R.color.task_completed_background);
+                            TypedValue typedValue = new TypedValue();
+                            context.getTheme().resolveAttribute(R.attr.colorTaskCompletedBackground, typedValue, true);
+                            cardView.setCardBackgroundColor(typedValue.data);
                         }
                     }else{
                         firestore.collection("task").document(toDoModel.TaskId).update("status" , 0);
-                        View cardView = holder.itemView.findViewById(R.id.task_card);
+                        MaterialCardView cardView = holder.itemView.findViewById(R.id.task_card);
                         if (cardView != null) {
-                            cardView.setBackgroundResource(R.color.task_background);
+                            TypedValue typedValue = new TypedValue();
+                            context.getTheme().resolveAttribute(R.attr.colorTaskBackground, typedValue, true);
+                            cardView.setCardBackgroundColor(typedValue.data);
                         }
                     }
                 } catch (Exception e) {

@@ -6,7 +6,7 @@
     style="@style/TaskCardStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/task_background">
+    app:cardBackgroundColor="?attr/colorTaskBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -37,7 +37,7 @@
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:text="Hạn: 31-03-2023"
-            android:textColor="@color/gray"
+            android:textColor="?attr/colorTextSecondary"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mcheckbox" />

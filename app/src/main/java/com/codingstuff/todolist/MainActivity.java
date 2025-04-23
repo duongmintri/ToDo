@@ -3,6 +3,7 @@ package com.codingstuff.todolist;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,11 +11,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codingstuff.todolist.Adapter.ToDoAdapter;
 import com.codingstuff.todolist.Model.ToDoModel;
@@ -43,8 +46,20 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
     private TextView noTasksText;
     private Toolbar toolbar;
 
+    // Hằng số cho theme
+    private static final String PREFS_NAME = "theme_prefs";
+    private static final String KEY_THEME = "app_theme";
+    private static final int THEME_LIGHT = 0;
+    private static final int THEME_DARK = 1;
+    private static final int THEME_SYSTEM = 2;
+
+    private boolean isDarkMode = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Áp dụng theme trước khi setContentView
+        applyTheme();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -143,17 +158,91 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        // Cập nhật icon menu dựa vào trạng thái theme hiện tại
+        MenuItem themeItem = menu.findItem(R.id.menu_theme);
+        updateThemeIcon(themeItem);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.menu_calendar) {
+        int id = item.getItemId();
+
+        if (id == R.id.menu_calendar) {
             // Chuyển đến màn hình lịch
             Intent intent = new Intent(MainActivity.this, CalendarActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.menu_theme) {
+            // Chuyển đổi theme
+            toggleTheme();
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Áp dụng theme dựa trên cài đặt đã lưu
+     */
+    private void applyTheme() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        int themeMode = prefs.getInt(KEY_THEME, THEME_SYSTEM);
+
+        switch (themeMode) {
+            case THEME_LIGHT:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                isDarkMode = false;
+                break;
+            case THEME_DARK:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                isDarkMode = true;
+                break;
+            default:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                isDarkMode = (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+        }
+    }
+
+    /**
+     * Chuyển đổi giữa chế độ sáng và tối
+     */
+    private void toggleTheme() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        if (isDarkMode) {
+            // Chuyển sang chế độ sáng
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            editor.putInt(KEY_THEME, THEME_LIGHT);
+            Toast.makeText(this, R.string.light_mode, Toast.LENGTH_SHORT).show();
+        } else {
+            // Chuyển sang chế độ tối
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            editor.putInt(KEY_THEME, THEME_DARK);
+            Toast.makeText(this, R.string.dark_mode, Toast.LENGTH_SHORT).show();
+        }
+
+        editor.apply();
+    }
+
+    /**
+     * Cập nhật icon menu dựa vào trạng thái theme hiện tại
+     */
+    private void updateThemeIcon(MenuItem item) {
+        if (item != null) {
+            isDarkMode = (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES);
+
+            if (isDarkMode) {
+                item.setIcon(R.drawable.ic_baseline_light_mode_24);
+                item.setTitle(R.string.light_mode);
+            } else {
+                item.setIcon(R.drawable.ic_baseline_dark_mode_24);
+                item.setTitle(R.string.dark_mode);
+            }
+        }
     }
 }
