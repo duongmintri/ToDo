@@ -30,6 +30,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
@@ -74,6 +76,8 @@ public class BackupRestoreActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private TextView statusTextView;
     private FirebaseFirestore firestore;
+    private FirebaseAuth mAuth;
+    private String userId;
     private List<ToDoModel> taskList;
 
     private void initFirestore() {
@@ -83,6 +87,18 @@ public class BackupRestoreActivity extends AppCompatActivity {
 
         firestore = FirebaseFirestore.getInstance();
         firestore.setFirestoreSettings(settings);
+
+        // Khởi tạo Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+
+        // Kiểm tra người dùng đã đăng nhập chưa
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            userId = currentUser.getUid();
+        } else {
+            // Nếu chưa đăng nhập, quay về màn hình chính
+            finish();
+        }
     }
 
     @Override
@@ -211,7 +227,7 @@ public class BackupRestoreActivity extends AppCompatActivity {
         statusTextView.setText(R.string.status_loading);
 
         // Tải tất cả công việc từ Firestore
-        firestore.collection("task").get()
+        firestore.collection("users").document(userId).collection("tasks").get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -467,7 +483,7 @@ public class BackupRestoreActivity extends AppCompatActivity {
 
             // Thêm các tác vụ vào batch
             for (Map<String, Object> task : batchTasks) {
-                DocumentReference newTaskRef = firestore.collection("task").document();
+                DocumentReference newTaskRef = firestore.collection("users").document(userId).collection("tasks").document();
                 refs.add(newTaskRef);
                 batch.set(newTaskRef, task);
             }

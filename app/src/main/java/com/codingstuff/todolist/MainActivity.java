@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.codingstuff.todolist.Adapter.ToDoAdapter;
 import com.codingstuff.todolist.Model.ToDoModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -40,12 +42,14 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
     private RecyclerView recyclerView;
     private FloatingActionButton mFab;
     private FirebaseFirestore firestore;
+    private FirebaseAuth mAuth;
     private ToDoAdapter adapter;
     private List<ToDoModel> mList;
     private Query query;
     private ListenerRegistration listenerRegistration;
     private TextView noTasksText;
     private Toolbar toolbar;
+    private String userId;
 
     // Hằng số cho theme
     private static final String PREFS_NAME = "theme_prefs";
@@ -70,6 +74,25 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
 
         firestore = FirebaseFirestore.getInstance();
         firestore.setFirestoreSettings(settings);
+
+        // Khởi tạo Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+
+        // Kiểm tra người dùng đã đăng nhập chưa
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            userId = currentUser.getUid();
+
+            // Kiểm tra xem có phải người dùng ẩn danh không
+            if (currentUser.isAnonymous()) {
+                // Hiển thị thông báo cho người dùng biết họ đang sử dụng chế độ ẩn danh
+                Toast.makeText(this, "Bạn đang sử dụng chế độ không đăng nhập. Dữ liệu sẽ không được đồng bộ.", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            // Nếu chưa đăng nhập, chuyển về màn hình đăng nhập
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
+        }
     }
 
     @Override
@@ -132,7 +155,8 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
     }
     public void loadData(){
         try {
-            query = firestore.collection("task").orderBy("time" , Query.Direction.DESCENDING);
+            // Sử dụng userId để truy vấn dữ liệu của người dùng hiện tại
+            query = firestore.collection("users").document(userId).collection("tasks").orderBy("time" , Query.Direction.DESCENDING);
 
             listenerRegistration = query.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
@@ -214,6 +238,12 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
             // Chuyển đến màn hình sao lưu và khôi phục
             Intent intent = new Intent(MainActivity.this, BackupRestoreActivity.class);
             startActivity(intent);
+            return true;
+        } else if (id == R.id.menu_logout) {
+            // Đăng xuất
+            mAuth.signOut();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
             return true;
         }
 

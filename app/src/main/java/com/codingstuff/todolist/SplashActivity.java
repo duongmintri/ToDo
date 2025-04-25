@@ -14,11 +14,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        // Ẩn ActionBar nếu nó tồn tại
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
+        // Không cần ẩn ActionBar vì đã sử dụng theme NoActionBar
 
         try {
             // Sử dụng Handler an toàn hơn với Looper.getMainLooper()
@@ -26,7 +22,7 @@ public class SplashActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
-                        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                        Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
                     } catch (Exception e) {
@@ -36,8 +32,8 @@ public class SplashActivity extends AppCompatActivity {
             }, 3000); // Giảm thời gian chờ xuống 3 giây để trải nghiệm tốt hơn
         } catch (Exception e) {
             e.printStackTrace();
-            // Nếu có lỗi, chuyển ngay đến MainActivity
-            startActivity(new Intent(SplashActivity.this, MainActivity.class));
+            // Nếu có lỗi, chuyển ngay đến LoginActivity
+            startActivity(new Intent(SplashActivity.this, LoginActivity.class));
             finish();
         }
     }

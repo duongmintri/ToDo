@@ -16,6 +16,8 @@ import android.widget.TextView;
 import com.codingstuff.todolist.Adapter.ToDoAdapter;
 import com.codingstuff.todolist.Model.ToDoModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -49,6 +51,8 @@ public class CalendarActivity extends AppCompatActivity implements OnDialogClose
     private Toolbar toolbar;
 
     private FirebaseFirestore firestore;
+    private FirebaseAuth mAuth;
+    private String userId;
     private ToDoAdapter adapter;
     private List<ToDoModel> mList;
     private List<ToDoModel> allTasksList;
@@ -76,8 +80,19 @@ public class CalendarActivity extends AppCompatActivity implements OnDialogClose
             selectedDateText = findViewById(R.id.selected_date_text);
             noTasksText = findViewById(R.id.no_tasks_calendar_text);
 
-            // Khởi tạo Firestore
+            // Khởi tạo Firestore và Auth
             firestore = FirebaseFirestore.getInstance();
+            mAuth = FirebaseAuth.getInstance();
+
+            // Kiểm tra người dùng đã đăng nhập chưa
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser != null) {
+                userId = currentUser.getUid();
+            } else {
+                // Nếu chưa đăng nhập, quay về màn hình chính
+                finish();
+                return;
+            }
 
             // Thiết lập RecyclerView
             recyclerView.setHasFixedSize(true);
@@ -106,7 +121,7 @@ public class CalendarActivity extends AppCompatActivity implements OnDialogClose
                 public void onDeleteTask(int position) {
                     // Xử lý sự kiện xóa công việc
                     ToDoModel toDoModel = mList.get(position);
-                    firestore.collection("task").document(toDoModel.TaskId).delete();
+                    firestore.collection("users").document(userId).collection("tasks").document(toDoModel.TaskId).delete();
                     mList.remove(position);
                     adapter.notifyItemRemoved(position);
                     loadAllTasks(); // Tải lại dữ liệu sau khi xóa
@@ -166,7 +181,7 @@ public class CalendarActivity extends AppCompatActivity implements OnDialogClose
 
     private void loadAllTasks() {
         try {
-            Query query = firestore.collection("task").orderBy("time", Query.Direction.DESCENDING);
+            Query query = firestore.collection("users").document(userId).collection("tasks").orderBy("time", Query.Direction.DESCENDING);
             query.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {

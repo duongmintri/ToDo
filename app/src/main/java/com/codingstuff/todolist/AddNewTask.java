@@ -24,6 +24,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -41,10 +43,12 @@ public class AddNewTask  extends BottomSheetDialogFragment {
     private EditText mTaskEdit;
     private Button mSaveBtn;
     private FirebaseFirestore firestore;
+    private FirebaseAuth mAuth;
     private Context context;
     private String dueDate = "";
     private String id = "";
     private String dueDateUpdate = "";
+    private String userId = "";
 
     public static AddNewTask newInstance(){
         return new AddNewTask();
@@ -67,6 +71,17 @@ public class AddNewTask  extends BottomSheetDialogFragment {
             mSaveBtn = view.findViewById(R.id.save_btn);
 
             firestore = FirebaseFirestore.getInstance();
+            mAuth = FirebaseAuth.getInstance();
+
+            // Lấy userId của người dùng hiện tại
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser != null) {
+                userId = currentUser.getUid();
+            } else {
+                // Nếu chưa đăng nhập, đóng dialog
+                dismiss();
+                return;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -159,7 +174,7 @@ public class AddNewTask  extends BottomSheetDialogFragment {
                         if (dueDate == null || dueDate.isEmpty()) {
                             dueDate = dueDateUpdate != null ? dueDateUpdate : "";
                         }
-                        firestore.collection("task").document(id).update("task" , task , "due" , dueDate);
+                        firestore.collection("users").document(userId).collection("tasks").document(id).update("task" , task , "due" , dueDate);
                         Toast.makeText(context, "Công việc đã được cập nhật", Toast.LENGTH_SHORT).show();
 
                     }
@@ -181,7 +196,7 @@ public class AddNewTask  extends BottomSheetDialogFragment {
                         taskMap.put("status", 0);
                         taskMap.put("time", FieldValue.serverTimestamp());
 
-                        firestore.collection("task").add(taskMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                        firestore.collection("users").document(userId).collection("tasks").add(taskMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentReference> task) {
                                 try {

@@ -20,12 +20,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ToDoList">
+
+        <!-- Cấu hình Firebase và reCAPTCHA -->
+        <meta-data
+            android:name="firebase_performance_logcat_enabled"
+            android:value="true" />
+        <meta-data
+            android:name="com.google.android.recaptcha.public_keys"
+            android:value="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" />
         <activity android:name=".SplashActivity" android:exported="true" android:theme="@style/Theme.ToDoList.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".LoginActivity" android:exported="false">
         </activity>
         <activity android:name=".MainActivity" android:exported="false">
         </activity>

@@ -21,6 +21,7 @@ import com.codingstuff.todolist.MainActivity;
 import com.codingstuff.todolist.Model.ToDoModel;
 import com.codingstuff.todolist.R;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
@@ -58,7 +59,10 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
             @Override
             public void onDeleteTask(int position) {
                 ToDoModel toDoModel = todoList.get(position);
-                FirebaseFirestore.getInstance().collection("task").document(toDoModel.TaskId).delete();
+                // Lấy userId từ FirebaseAuth
+                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                // Xóa task từ collection mới
+                FirebaseFirestore.getInstance().collection("users").document(userId).collection("tasks").document(toDoModel.TaskId).delete();
                 todoList.remove(position);
                 notifyItemRemoved(position);
             }
@@ -131,8 +135,11 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 try {
+                    // Lấy userId từ FirebaseAuth
+                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
                     if (isChecked){
-                        firestore.collection("task").document(toDoModel.TaskId).update("status" , 1);
+                        firestore.collection("users").document(userId).collection("tasks").document(toDoModel.TaskId).update("status" , 1);
                         MaterialCardView cardView = holder.itemView.findViewById(R.id.task_card);
                         if (cardView != null) {
                             TypedValue typedValue = new TypedValue();
@@ -140,7 +147,7 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
                             cardView.setCardBackgroundColor(typedValue.data);
                         }
                     }else{
-                        firestore.collection("task").document(toDoModel.TaskId).update("status" , 0);
+                        firestore.collection("users").document(userId).collection("tasks").document(toDoModel.TaskId).update("status" , 0);
                         MaterialCardView cardView = holder.itemView.findViewById(R.id.task_card);
                         if (cardView != null) {
                             TypedValue typedValue = new TypedValue();

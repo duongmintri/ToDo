@@ -16,4 +16,9 @@
         android:icon="@drawable/ic_baseline_settings_backup_restore_24"
         android:title="@string/backup_restore"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_logout"
+        android:icon="@drawable/ic_baseline_delete_24"
+        android:title="@string/logout"
+        app:showAsAction="never" />
 </menu>

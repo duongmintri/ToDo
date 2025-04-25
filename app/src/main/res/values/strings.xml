@@ -44,4 +44,16 @@
     <string name="ok">OK</string>
     <string name="return_to_main">Quay lại màn hình chính</string>
     <string name="data_refreshed">Dữ liệu đã được cập nhật</string>
+
+    <!-- Authentication -->
+    <string name="login">Đăng nhập</string>
+    <string name="register">Đăng ký</string>
+    <string name="email">Email</string>
+    <string name="password">Mật khẩu</string>
+    <string name="login_success">Đăng nhập thành công</string>
+    <string name="login_failed">Đăng nhập thất bại</string>
+    <string name="register_success">Đăng ký thành công</string>
+    <string name="register_failed">Đăng ký thất bại</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="auth_required">Cần đăng nhập để sử dụng tính năng này</string>
 </resources>

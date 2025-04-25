@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
 public class ToDoApplication extends Application {
@@ -15,9 +17,16 @@ public class ToDoApplication extends Application {
     private static final int THEME_DARK = 1;
     private static final int THEME_SYSTEM = 2;
 
+    // Firebase Auth instance
+    private FirebaseAuth mAuth;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // Khởi tạo Firebase
+        FirebaseApp.initializeApp(this);
+        mAuth = FirebaseAuth.getInstance();
 
         // Khởi tạo thư viện ThreeTenABP
         AndroidThreeTen.init(this);
